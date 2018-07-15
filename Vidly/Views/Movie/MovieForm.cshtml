@@ -1,0 +1,64 @@
+﻿@model Vidly.Models.Movie
+@{
+
+    ViewBag.Title = "MovieForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Header</h2>
+
+
+
+@using (Html.BeginForm("Save", "Movie"))
+{
+    @Html.AntiForgeryToken()
+
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.MovieName)
+
+        @Html.TextBoxFor(model => model.MovieName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.MovieName, "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ReleaseDate)
+
+        @Html.TextBoxFor(model => model.ReleaseDate, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ReleaseDate, "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.AddedDate)
+
+        @Html.TextBoxFor(model => model.AddedDate, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.AddedDate, "", new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.NumberInStock)
+
+        @Html.TextBoxFor(model => model.NumberInStock, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.NumberInStock, "", new { @class = "text-danger" })
+
+    </div>
+    @Html.HiddenFor(model => model.Id)
+    <div class="form-group">
+        @Html.LabelFor(model => model.GenreId)
+
+        @Html.DropDownList("GenreId", null, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.GenreId, "", new { @class = "text-danger" })
+
+    </div>
+
+    <button class="btn btn-primary">Save</button>
+
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

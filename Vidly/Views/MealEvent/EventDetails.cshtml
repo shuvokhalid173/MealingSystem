@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "EventDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EventDetails</h2>
+
+<div class="container" style="font-size:large;font-style:oblique">
+    
+    <ul>
+        <li id="event-name"></li>
+        <li id="event-email"></li>
+        <li id="total-member"></li>
+        <li>Members 
+            <ul id="members-container">
+            </ul>
+        </li>
+    </ul>
+              
+</div>
+
+<div class="container"><button id="edit" class="btn btn-primary">edit</button></div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: "/api/mealevent?date=nothing&&id=2" ,
+                method: "GET",
+                success: function (data) {
+                    console.log(data.mealEvent.NumberOfMember);
+                    $("#event-name").html(data.mealEvent.EventName + "(event name)");
+                    $("#event-email").html(data.mealEvent.Email + "(event email)");
+                    $("#total-member").html(data.mealEvent.NumberOfMember + "(total members)");
+                    for (var i = 0; i < data.mealEvent.NumberOfMember; i++) {
+                        $("#members-container").append('<li>'+data.members[i].Name+'</li>');
+                    }
+                }
+            });
+
+            $("#edit").on("click", function () {
+                window.location.replace("EditEvent");
+            });
+        });
+    </script>    
+}

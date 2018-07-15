@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewBag.Title = "EventHome";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Entry Todays Meal</h2>
+
+
+
+<div id="f">
+    <button id="entrybutton" class="btn-link">click here</button><br />
+</div>
+
+<form id="formId">
+    <table>
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Date</th>
+                <th>Breakfast</th>
+                <th>Launch</th>
+                <th>Dinner</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyId">
+            <!--
+            <tr>
+                <td><label class="form-control">Shuvo</label></td>
+                <td><label class="form-control">@DateTime.Today.Date</label></td>
+                <td><input type="number" name="name" value="" class="form-control"/></td>
+                <td><input type="text" name="name" value="" class="form-control"/></td>
+                <td><input type="text" name="name" value="" class="form-control"/></td>
+            </tr>
+            -->
+        </tbody>
+    </table>
+    <span class="alert-danger">click</span>
+    <div class="form-group"><button class="btn btn-primary">submit</button></div>
+</form>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $("#formId").hide();
+            var member = {
+                nameList: [],
+                memberList:[]
+            }
+            $.ajax({
+                url: "/api/EverydaysMeal?id=getmembers",
+                method: "GET",
+                success: function (data) {
+                    //  console.log(data[0]);
+                    //  console.log(data[0].Member.Name);
+
+                    for (var i in data) {
+                        member.memberList.push(data[i]);
+                        member.nameList.push(data[i].Name);
+                    }
+
+
+                }
+            });
+
+
+            function getCode (MemberName  , id , thisMeal) {
+
+                return '<tr>' +
+                    '<td><label class="form-control t'+id+'">' + MemberName + '</label ></td > ' +
+                    '<td><label class="form-control t' + id + '">@DateTime.Today.Date</label></td>' +
+                    '<td><input type="number" name="name" required value="' + thisMeal.Breakfast + '" class="form-control t' + id + '"/></td>' +
+                    '<td><input type="number" name="name" required value="' + thisMeal.Launch + '" class="form-control t' + id + '"/></td>' +
+                    '<td><input type="number" name="name" required value="' + thisMeal.Dinner + '" class="form-control t' + id + '"/></td>' +
+                     '</tr>'
+
+            }
+
+            function getTodaysMealInfo(i) {
+                var value; 
+                $.ajax({
+                    url: "/api/EverydaysMeal?date=@DateTime.Today&&id=" + member.memberList[i].Id,
+                    async: false, 
+                    method: "GET", 
+                    success: function (data) {
+                        value = data;//console.log(data.Breakfast);
+                    }
+                });
+                return value; 
+            }
+
+            $(this).on("click", "#entrybutton", function () {
+                $("#entrybutton").hide();
+                $("#formId").show();
+                for (var i = 0; i < member.nameList.length; i++) {
+                    //var thisMeal = getTodaysMealInfo(dd);
+                    //console.log(getTodaysMealInfo(i));
+                    $("#tbodyId").append(getCode(member.nameList[i], i, getTodaysMealInfo(i)));
+                }
+
+            });
+
+
+            var Meal = {}
+            
+            $("#formId").validate({
+                submitHandler: function () {
+
+
+                    for (var i = 0; i < member.nameList.length; i++) {
+                        console.log("index " + i);
+                        $(".t" + i).each(function (index) {
+                            if (index == 0) {
+                                Meal.Member = member.memberList[i];
+                            }
+                            else if (index == 1) {
+                                Meal.Date = $(this).html();
+                            }
+                            else if (index == 2) {
+                                Meal.Breakfast = $(this).val();
+                            }
+                            else if (index == 3) {
+                                Meal.Launch = $(this).val();
+                            }
+                            else {
+                                Meal.Dinner = $(this).val();
+                            }
+                        });
+                        console.log(Meal);
+                        $.ajax({
+                            url: "/api/everydaysmeal",
+                            method: "POST",
+                            data: Meal,
+                            async: false,
+                            success: function () {
+                                //console.log(Meal);
+                                if (i == member.nameList.length - 1) {
+                                    toastr.success("successfully recorded");
+                                    window.location.replace("ShowPreviousMeal");
+                                    // to redirect to another page window.location.replace("http:/localhost:53992/MealEvent/ShowPreviousMeal");
+
+                                }
+                            }
+                        });
+                    }
+                    
+                }
+            });
+        });
+
+    </script>
+}

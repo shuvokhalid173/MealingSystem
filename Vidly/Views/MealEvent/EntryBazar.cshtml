@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewBag.Title = "Bazar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Entry Bazar</h2>
+
+<div id="button-container">
+    <button class="btn-link" id="EB">click here</button>
+    
+</div>
+<form id="formId">
+    <table>
+        <thead>
+            <tr>
+                <th>Member</th>
+                <th>Date</th>
+                <th>Bazar</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyId">
+            
+        </tbody>
+    </table>
+    <div class="form-group"><button class="btn btn-primary">submit</button></div>
+</form>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $("#formId").hide();
+            var member = {
+                nameList: [],
+                memberList:[]
+            }
+            $.ajax({
+                url: "/api/EverydaysMeal?id=getmembers",
+                method: "GET",
+                success: function (data) {
+                    //  console.log(data[0]);
+                    //  console.log(data[0].Member.Name);
+
+                    for (var i in data) {
+                        member.memberList.push(data[i]);
+                        member.nameList.push(data[i].Name);
+                    }
+
+
+                }
+            });
+
+
+            function getCode (MemberName  , id , thisBazar) {
+
+                return '<tr>' +
+                    '<td><label class="form-control t'+id+'">' + MemberName + '</label ></td > ' +
+                    '<td><label class="form-control t' + id + '">@DateTime.Today.Date</label></td>' +
+                    '<td><input type="number" name="name" required value="' + thisBazar.Bazar + '" class="form-control t' + id + '"/></td>' +
+                    '</tr>'
+
+            }
+
+            function getTodaysBazarInfo(i) {
+                var value; 
+                $.ajax({
+                    url: "/api/Bazar?date=@DateTime.Today&&id=" + member.memberList[i].Id,
+                    async: false, 
+                    method: "GET", 
+                    success: function (data) {
+                        value = data;//console.log(data.Breakfast);
+                    }
+                });
+                return value; 
+            }
+
+
+            $(this).on("click", "#EB", function () {
+                $("#EB").hide();
+                $("#formId").show();
+
+                for (var i = 0; i < member.nameList.length; i++) {
+                    $("#tbodyId").append(getCode(member.nameList[i], i, getTodaysBazarInfo(i)));
+                }
+
+            });
+
+
+            var Bazar = {}
+
+            $("#formId").validate({
+                submitHandler: function () {
+
+
+                    for (var i = 0; i < member.nameList.length; i++) {
+                        console.log("index " + i);
+                        $(".t" + i).each(function (index) {
+                            if (index == 0) {
+                                Bazar.Member = member.memberList[i];
+                            }
+                            else if (index == 1) {
+                                Bazar.Date = $(this).html();
+                            }
+                            else {
+                                Bazar.Bazar = $(this).val();
+                            }
+                        });
+                        console.log(Bazar);
+                        $.ajax({
+                            url: "/api/Bazar",
+                            method: "POST",
+                            async: false,
+                            data: Bazar,
+                            success: function () {
+                                if (i == member.nameList.length - 1) {
+                                    toastr.success("successfully recorded");
+                                    window.location.replace("ShowPreviousBazar");
+                                }
+                            }
+                        });
+                    }
+
+                }
+            });
+        });
+
+    </script>
+}

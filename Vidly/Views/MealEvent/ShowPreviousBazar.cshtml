@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "ShowPreviousBazar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>See bazar sheet</h2>
+
+<button class="btn btn-primary" id="show">see bazar sheet</button>
+
+<div>
+    <table id="previous-bazar" class="table table-bordered">
+        <thead>
+            <tr id="heading-row">
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody id="body"></tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+
+            $("#previous-bazar").hide();
+            var Members = [];
+            $.ajax({
+                url: "/api/EverydaysMeal?id=ss",
+                method: "GET",
+                success: function (data) {
+                    //console.log(data);
+                    for (var i in data) {
+                        Members.push(data[i]);
+
+                    }
+
+                }
+            });
+
+            var date = Date().toString();
+            console.log(date);
+            $("#show").on("click", function () {
+                $(this).hide();
+                $("#previous-bazar").show();
+                
+                for (var i = 0; i < Members.length; i++) {
+                    $("#heading-row").append('<th>' + Members[i].Name + '</th>');
+                }
+
+                var date = {
+                    day: @DateTime.Today.Day,
+                    month:@DateTime.Today.Month,
+                    year:@DateTime.Today.Year,
+
+                }
+
+                var dates = [];
+                var todaysDay = date.day;
+
+                while (todaysDay !== 0) {
+
+                    var date__ = date.month + "/" + todaysDay + "/" + date.year;
+                    dates.push(date__);
+                    todaysDay--;
+                }
+
+
+                function getData(date_, id , index) {
+                    $.ajax({
+
+                        url: "/api/Bazar?date=" + date_ + "&&id=" + id,
+                        method: "GET",
+                        async: false,
+                        success: function (data) {
+                            console.log(data.Bazar);
+                            var bazar = data.Bazar;
+                            codee = codee + '<td>' + bazar + '</td>';
+                            if (index == Members.length - 1) {
+                                //console.log(codee);
+                                $("#body").append('<tr>' + codee + '</tr>');
+                            }
+                        }
+
+                    });
+                }
+                var codee = "";
+                for (var i = dates.length - 1; i >= 0; i--) {
+                    codee = '<td>' + dates[i] + '</td>';
+                    for (var j = 0; j < Members.length; j++) {
+                        //console.log("/api/EverydaysMeal?date=" + dates[i] + "&&id=" + Members[j].Id);
+                        getData(dates[i], Members[j].Id , j);
+
+                    }
+
+                }
+                $("#previous-bazar").DataTable();
+
+            });
+
+        });
+    </script>
+
+}

@@ -1,0 +1,209 @@
+﻿@{
+    ViewBag.Title = "EditEvent";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--
+"<tr>" +
+                        "<td>" +
+                            "<input placeholder='Member Name' type='text' required name='eventMember' id='tinput" + index + "' value='' class='anyy' />" +
+                        "</td>" +
+                        "<td>" +
+                            "<span id='deleteNo" + __index__ + "' class='btn' onclick='delete_element(" + index +")'>X</span>" +
+                        "</td>" +
+                    "</tr > "
+-->
+
+<h2>EditEvent</h2>
+<form id="MealEvent" action="/MealEvent/EventDetails" method="post">
+
+    <div class="form-group">
+        <label>Event Name</label>
+        <input id="eventname" data-rule-unique="true" required type="text" name="eventName" value="" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Number of members</label>
+        <input readonly id="members_number" type="number" min="1" name="eventMemberNumber" required value="" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Members</label> <span id="add-member" class="btn btn-primary">Add member</span>
+    </div>
+    <div id="tdiv">
+        <div id="abc" class="form-group">
+            <table>
+                <thead></thead>
+                <tbody id="dynamicField"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        $(document).ready(function () {
+
+            // This is view model object to send to the server
+            var VM = {
+                memberlist: []
+            };
+
+            var object = [];
+            var initialValue , initialMemberNumber;
+
+            // get event info from the server using ajax to initialize the field 
+            $.ajax({
+                url: "/api/MealEvent?date=dd&&id=2", 
+                method: "GET", 
+                success: function (data) {
+                    object = data.members;
+                    //VM.eventName = data.mealEvent.EventName;
+                    initialValue = data.mealEvent.EventName;
+                    //VM.eventMemberNumber = data.mealEvent.NumberOfMember;
+                    initialMemberNumber = data.mealEvent.NumberOfMember;
+                    $("#eventname").val(data.mealEvent.EventName);
+                    $("#members_number").val(data.mealEvent.NumberOfMember); 
+                    goo();
+                }
+            }); 
+            
+            
+            // this will indexing the input element
+            var __index__ = 0;
+
+            // initialize the table row from the number of member
+            function goo() {
+                for (var index = 0; index < $("#members_number").val(); index++) {
+                    __index__ = index;
+                    $("#dynamicField").append(
+                        "<tr id='row" + __index__ + "'>" +
+                            "<td>" +
+                                "<input id-attr='"+__index__+"' placeholder='Member Name' type='text' required name='eventMember' id='tinput" + __index__ + "' value='" + object[index].Name + "' class='form-control anyy' />" +
+                            "</td>" +
+                            "<td>" +
+                                "<span id='" + __index__ + "' class='btn btn-danger'>X</span>" +
+                            "</td>" +
+                        "</tr > "
+
+                    );
+                    //VM.memberlist.push(object[index]);
+                }
+            }
+            // add button action
+            $("#add-member").on("click", function () {
+
+                if (__index__ >= 0) {
+                    __index__++;
+                }
+                $("#dynamicField").append(
+                    "<tr id='row" + __index__ + "'>" +
+                    "<td>" +
+                    "<input id-attr='" + __index__ + "' placeholder='Member Name' type='text' required name='eventMember' id='tinput" + __index__ + "' value='' class='form-control anyy' />" +
+                        "</td>" +
+                        "<td>" +
+                            "<span id='" + __index__ + "' class='btn btn-danger'>X</span>" +
+                        "</td>" +
+                    "</tr > "
+
+                );
+                $("#members_number").val(parseInt($("#members_number").val()) + 1);
+
+                //console.log($("#tinput" + __index__));
+            });
+
+            $(document).on("click", ".btn-danger", function () {
+                var id = $(this).attr("id");
+                
+                
+                    bootbox.confirm("Are you sure you want to delete this member?", function (result) {
+                        if (result == true) {
+                            $("#members_number").val(parseInt($("#members_number").val()) - 1);
+                            if (id < initialMemberNumber) {
+                                var obj = {}
+                                obj.Id = object[id].Id;
+                                obj.Name = "*";
+                                VM.memberlist.push(obj);
+                            }
+                            $("#row" + id).remove();
+                            
+                        }
+
+                    });
+                
+            }); 
+
+            
+            /// submitting the form 
+            $("#MealEvent").submit(function () {
+
+                var val = $("#eventname").val();
+                var flag = true;
+                $.ajax({
+                    url: "/api/MealEvent",
+                    method: "GET",
+                    async: false,
+                    success: function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].EventName == val) {
+                                 flag = false;
+                                //$("form").submit(function () { return false; });
+                            }
+                        }
+                    }
+                });
+                if (val == initialValue) {
+                    flag = true;
+                }
+                if (flag == true) {
+                    VM.eventName = $("#eventname").val();
+                    //VM.eventEmail = $("#email").val();
+                    VM.eventMemberNumber = $("#members_number").val();
+
+                    $(".anyy").each(function (index) {
+                        var obj = {}
+                        var idd = $(this).attr("id-attr");
+                        if (idd < initialMemberNumber) {
+                            obj.Id = object[idd].Id;
+                            obj.Name = $(this).val();
+                        }
+                        else {
+                            obj.Id = 0;
+                            obj.Name = $(this).val();
+                        }
+                        VM.memberlist.push(obj);
+                        //console.log(obj);
+                    });
+                    
+                    console.log(VM);
+                    $.ajax({
+                        url: "/api/MealEvent",
+                        method: "PUT",
+                        data: VM,
+                        async: false,
+                        success: function () {
+                            console.log(VM);
+                            console.log("success");
+                            VM = { memberlist: [] }
+                            //window.location.replace("EntryMeal");
+                        }
+                    });
+                }
+                else {
+                    bootbox.alert("Event name is already exists.Chose another");
+                    return false;
+                }
+
+            });
+
+
+            
+        });
+
+    </script>
+}

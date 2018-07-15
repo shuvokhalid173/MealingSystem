@@ -1,0 +1,39 @@
+﻿
+
+<div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Roll</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="id">Shuvo</td>
+                <td>1862</td>
+                <td>A+</td>
+            </tr>
+            <tr>
+                <td id="idd">Kanon</td>
+                <td>1250</td>
+                <td>A+</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            var element = $("tbody").children();
+            
+            for (var i = 0; i < element.length; i++) {
+                var eachElement = element[i];
+                console.log(eachElement.children[0].getAttribute("id"));
+            }
+        }); 
+    </script>
+}

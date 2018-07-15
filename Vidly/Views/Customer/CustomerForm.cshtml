@@ -1,0 +1,44 @@
+﻿@model Vidly.Models.Customer
+@{
+    ViewBag.Title = "CustomerForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Header</h2>
+
+@using (Html.BeginForm("Save", "Customer"))
+
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "please fix the following ..", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.BirthDate)
+        @Html.TextBoxFor(m => m.BirthDate, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.BirthDate, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MembershipTypeId)
+        @Html.DropDownList("MembershipTypeId", null, "Select Membership Type", htmlAttributes: new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.MembershipTypeId, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="custom-checkbox">
+        <label>
+            @Html.CheckBoxFor(m => m.IsSubscribedToNewsLetter) Subscribed to news letter
+        </label>
+        @Html.ValidationMessageFor(m => m.IsSubscribedToNewsLetter, "", new { @class = "text-danger" })
+    </div>
+    @Html.HiddenFor(m => m.Id)
+    <button class="btn btn-primary">Save</button>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewBag.Title = "EventForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EventForm</h2>
+
+
+<form id="MealEvent" method="post" action="/MealEvent/EntryMeal">
+
+    <div class="form-group">
+        <label>Event Name</label>
+        <input id="eventname" required type="text" name="eventName" value="" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Number of members</label>
+        <input id="members_number" type="number"  min="1" name="eventMemberNumber" required value="" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>please insert the name of members</label>
+    </div>
+
+    <div id="tdiv">
+        <div id="abc" class="form-group">
+            
+        </div>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        $(document).ready(function () {
+            var VM = {
+
+                memberlist: []
+            }; 
+            $("#members_number").on("keyup", function () {
+                var memberList = $(this).val().toString();
+                var Number = 0, tempNumber = 0;
+                for (var i = 0; i < memberList.length; i++) {
+                    var digit = memberList[i] - '0';
+                    Number = Number * 10 + digit;
+                }
+
+                console.log(Number + 1);
+
+                $("#abc").remove();
+                $("#tdiv").append("<div id='abc' class='form-group'></div>");
+
+                for (var index = 0; index < Number; index++) {
+                    
+                    $("#abc").append("<input placeholder='Member Name' type='text' required name='eventMember'id='tinput'value='' class='form-control anyy'/>");
+                }
+                
+            });
+            
+            $("#MealEvent").submit(function () {
+
+                var val = $("#eventname").val();
+                var flag = true;
+                $.ajax({
+                    url: "/api/MealEvent",
+                    method: "GET",
+                    async: false,
+                    success: function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].EventName == val) {
+                                 flag = false;
+                                //$("form").submit(function () { return false; });
+                            }
+                        }
+                    }
+                });
+                if (flag == true) {
+                    VM.eventName = $("#eventname").val();
+                    //VM.eventEmail = $("#email").val();
+                    VM.eventMemberNumber = $("#members_number").val();
+                    $(".anyy").each(function (index) {
+                        var obj = {}
+                        obj.Name = $(this).val();
+                        VM.memberlist.push(obj);
+                    });
+                    console.log(VM);
+                    $.ajax({
+                        url: "/api/MealEvent",
+                        method: "POST",
+                        data: VM,
+                        async: false,
+                        success: function () {
+                            console.log("success");
+                            VM = { memberlist: [] }
+                            //window.location.replace("EntryMeal");
+                        }
+                    });
+                }
+                else {
+                    bootbox.alert("Event name is already exists.Chose another");
+                    return false;
+                }
+                
+            });
+            
+
+            
+        });
+    </script>
+}

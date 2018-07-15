@@ -1,0 +1,38 @@
+﻿
+<div class="navbar navbar-inverse navbar-fixed-top" >
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @Html.ActionLink("Vidly", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>@Html.ActionLink("New Rental" , "New" , "Rentals")</li>
+                <li>@Html.ActionLink("Customer", "Index", "Customer")</li>
+                <li>@Html.ActionLink("Movie", "Index", "Movie")</li>
+                <li class="dropdown">
+                    <a href="/MealEvent/EventForm" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">MealEvent<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/MealEvent/EventForm">Create Event</a></li>
+                        <li><a href="/MealEvent/EventDetails">Our event</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Meal side</li>
+                        <li><a href="/MealEvent/EntryMeal">Entry Todays Meal</a></li>
+                        <li><a href="/MealEvent/ShowPreviousMeal">See Meal Sheet</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Bazar side</li>
+                        <li><a href="/MealEvent/EntryBazar">Entry Todays Bazar</a></li>
+                        <li><a href="/MealEvent/ShowPreviousBazar">See Bazar Sheet</a></li>
+                    </ul>
+                </li>
+            </ul>
+            @Html.Partial("_LoginPartial")
+        </div>
+    </div>
+</div>
+
+
