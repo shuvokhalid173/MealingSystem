@@ -381,6 +381,7 @@
     <Compile Include="Models\EverydaysMeal.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\MealAccountInfo.cs" />
     <Compile Include="Models\MealBazarViewModel.cs" />
     <Compile Include="Models\MealEvent.cs" />
     <Compile Include="Models\MealEventDto.cs" />

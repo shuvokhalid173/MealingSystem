@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 id="heading" style="text-align:center;">Your Meal Sheet</h2>
+<h2 id="heading" style="text-align:center; width:50%">Your Meal Sheet</h2>
 
 
 
@@ -31,13 +31,15 @@
 
 
 <div style="float:right">
-    Select the date : <input id="date-corner" placeholder="change" class="form-control" type="date" name="name" value="" />
+    
 </div>
 
-<div class="container">
-   
+<div class="container" style="width:48%;height:100%;float:left">
+
     <a href="/MealEvent/ShowPreviousMeal">click</a> here to see full meal sheet<br />
     <a href="/MealEvent/ShowPreviousBazar">click</a> here to see full bazar sheet
+    
+    <input id="date-corner" style="float:right" placeholder="change" class="form-control" type="date" name="name" value="" />
     <table id="meal" class="table table-bordered">
         <thead>
             <tr>
@@ -58,7 +60,42 @@
     </table>
     <span id="editButton" class="btn btn-primary" style="float:right; margin-left:2px">Edit</span>
     <button id="saveButton" class="btn btn-primary" style="float:right;">Save</button>
+    <strong style="text-align:center">scrol down to see meal Accounts</strong>
+</div>
 
+<h2 style="text-align:center">Meal Accounts</h2>
+<div class="container" style="width:48%;height:100%;float:right">
+    
+    <table id="mealRateTable" class="table table-bordered" style="float:none">
+        <thead>
+            <tr>
+                <th id="mealRate">MealRate = 55</th>
+            </tr>
+        </thead>
+    </table>
+
+
+    <table id="mealBazarTable" class="table table-bordered" style="float:left; width:48%; height:100%; margin-right:4%;">
+        <thead>
+            <tr>
+                <th>Member Name</th>
+                <th>Total Meal</th>
+                <th>Total Bazar</th>
+            </tr>
+        </thead>
+        <tbody id="mBT"></tbody>
+    </table>
+
+    <table id="takeGiveTable" class="table table-bordered" style="float:right;width:48%; height:100%;" >
+        <thead>
+            <tr>
+                <th>Member Name</th>
+                <th>Will take</th>
+                <th>Will give</th>
+            </tr>
+        </thead>
+        <tbody id="tGT"></tbody>
+    </table>
 </div>
 
 
@@ -174,6 +211,9 @@
                     '</tr>'
                 );
             }
+
+            mealAccountInfo();
+
             var testDate = TodaysDate;
             $("#date-corner").change(function () {
 
@@ -280,12 +320,51 @@
                             if (i == ALL__LIST.mealList.length - 1) {
                                 toastr.success("successfully recorded");
                                 $(".anyy").prop("readonly", true);
+                                mealAccountInfo();
                             }
                             //toastr.success("successfully saved");
                         }
                     });
                 }
             });
+
+            function mealAccountInfo() {
+                $.ajax({
+                    url: "/api/MealBazar", 
+                    method: "GET", 
+                    success: function (data) {
+                        $("#mBT").children().remove();
+                        console.log(data);
+                        var member_bazar = data.Member_Bazars;
+                        var member_meal = data.Member_Meals;
+                        var total_meal = 0, total_bazar = 0; 
+                        for (var i = 0; i < member_bazar.length; i++) {
+                            total_bazar += member_bazar[i].TotalBazar;
+                            total_meal += member_meal[i].TotalMeal;
+                            $("#mBT").append(
+                                '<tr>' +
+                                '<td>' + member_meal[i].Member.Name + '</td>' + 
+                                '<td>' + member_meal[i].TotalMeal + '</td>' + 
+                                '<td>' + member_bazar[i].TotalBazar + ' TK</td>' +
+                                '</tr>'
+                            );
+
+                        }
+                        $("#mBT").append(
+                            '<tr>' +
+                            '<td></td>' +
+                            '<td>Total ' + total_meal + '</td>' +
+                            '<td>Total ' + total_bazar + ' TK</td>' +
+                            '</tr>'
+                        );
+
+                        var mealRate = total_bazar / total_meal; 
+
+                        $("#mealRate").html("Meal Rate = " + mealRate);
+
+                    }
+                });
+            }
 
         });
     </script>

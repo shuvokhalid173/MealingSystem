@@ -17,6 +17,82 @@ namespace Vidly.Controllers.Api
             _context = new ApplicationDbContext();
         }
 
+        [HttpGet]
+        public IHttpActionResult GetMealAccountInfo ()
+        {
+
+            string email = AccountController.CurrentUserEmail; // get current user mail
+            if (email.Equals("nothing"))
+            {
+                return BadRequest();
+            }
+            var meal = _context.MealEvents.Single(c => c.Email.Equals(email)); int idd = meal.Id;// get current user meal event id
+
+            List<Member> members = _context.Members.Where(c => c.MealEvent.Id == idd).ToList(); // get the member of that meal event
+            //return Ok(members);
+
+            // this list will store member and member's total meal
+            List<Member_Meal> member_Meals = new List<Member_Meal> ();
+
+            // this list will store member and member's total bazar
+            List<Member_Bazar> member_Bazars = new List<Member_Bazar> ();
+
+            // finding all meals of each member
+            foreach (var member in members)
+            {
+                decimal totalMealOfthisMember = 0; 
+
+                IEnumerable<EverydaysMeal> everydaysMealOfThisMember = _context
+                    .EverydaysMeals.Where(c => c.Member.Id == member.Id && c.Date.Month <= DateTime.Today.Month).ToList();
+
+                
+
+                foreach (var item in everydaysMealOfThisMember)
+                {
+                    totalMealOfthisMember += item.Breakfast;
+                    totalMealOfthisMember += item.Launch;
+                    totalMealOfthisMember += item.Dinner;
+                }
+
+                Member_Meal member_Meal = new Member_Meal
+                {
+                    Member = member,
+                    TotalMeal = totalMealOfthisMember
+                };
+
+                member_Meals.Add(member_Meal);
+            }
+
+            // finding all bazars of each member
+            foreach (var member in members)
+            {
+                decimal totalBazarOfthisMember = 0;
+
+                IEnumerable<EverydaysBazar> everydaysBazarOfThisMember = _context
+                    .EverydaysBazars.Where(c => c.Member.Id == member.Id && c.Date.Month == DateTime.Today.Month).ToList();
+
+                foreach (var item in everydaysBazarOfThisMember)
+                {
+                    totalBazarOfthisMember += item.Bazar;
+                }
+
+                Member_Bazar member_Meal = new Member_Bazar
+                {
+                    Member = member,
+                    TotalBazar = totalBazarOfthisMember
+                };
+
+                member_Bazars.Add(member_Meal);
+            }
+
+            MealAccountInfo mealAccountInfo = new MealAccountInfo
+            {
+                Member_Bazars = member_Bazars , 
+                Member_Meals = member_Meals
+            };
+            return Ok(mealAccountInfo);
+        }
+
         [HttpPost]
         public IHttpActionResult PostResult (MealBazarViewModel mealBazar)
         {
