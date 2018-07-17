@@ -207,6 +207,7 @@
     <Compile Include="Controllers\Api\BazarController.cs" />
     <Compile Include="Controllers\Api\CustomerController.cs" />
     <Compile Include="Controllers\Api\EverydaysMealController.cs" />
+    <Compile Include="Controllers\Api\MealBazarController.cs" />
     <Compile Include="Controllers\Api\MealEventController.cs" />
     <Compile Include="Controllers\Api\MovieController.cs" />
     <Compile Include="Controllers\Api\NewRentalsController.cs" />
@@ -380,6 +381,7 @@
     <Compile Include="Models\EverydaysMeal.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\MealBazarViewModel.cs" />
     <Compile Include="Models\MealEvent.cs" />
     <Compile Include="Models\MealEventDto.cs" />
     <Compile Include="Models\MealEventWithMembersViewModel.cs" />
@@ -1438,6 +1440,7 @@
     <Content Include="Views\MealEvent\ShowPreviousBazar.cshtml" />
     <Content Include="Views\MealEvent\EventDetails.cshtml" />
     <Content Include="Views\MealEvent\EditEvent.cshtml" />
+    <Content Include="Views\MealEvent\MealBazar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

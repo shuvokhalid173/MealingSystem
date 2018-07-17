@@ -170,6 +170,7 @@ namespace Vidly.Controllers
         {
             if (ModelState.IsValid)
             {
+                CurrentUserEmail = model.Email;
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,

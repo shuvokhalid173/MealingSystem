@@ -44,6 +44,19 @@
     <script>
         $(document).ready(function () {
             $("#formId").hide();
+
+            var d = new Date();
+
+            var month = d.getMonth() + 1;
+            var day = d.getDate();
+
+            var output = d.getFullYear() + '-' +
+                (month < 10 ? '0' : '') + month + '-' +
+                (day < 10 ? '0' : '') + day;
+
+            var TodaysDate = (month < 10 ? '0' : '') + month + '/' + (day < 10 ? '0' : '') + day + "/" + d.getFullYear();
+                
+
             var member = {
                 nameList: [],
                 memberList:[]
@@ -68,8 +81,8 @@
             function getCode (MemberName  , id , thisMeal) {
 
                 return '<tr>' +
-                    '<td><label class="form-control t'+id+'">' + MemberName + '</label ></td > ' +
-                    '<td><label class="form-control t' + id + '">@DateTime.Today.Date</label></td>' +
+                    '<td><label class="form-control t' + id + '">' + MemberName + '</label ></td > ' +
+                    '<td><label class="form-control t' + id + '">' + TodaysDate + '</label></td>' +
                     '<td><input type="number" name="name" required value="' + thisMeal.Breakfast + '" class="form-control t' + id + '"/></td>' +
                     '<td><input type="number" name="name" required value="' + thisMeal.Launch + '" class="form-control t' + id + '"/></td>' +
                     '<td><input type="number" name="name" required value="' + thisMeal.Dinner + '" class="form-control t' + id + '"/></td>' +
@@ -80,7 +93,7 @@
             function getTodaysMealInfo(i) {
                 var value; 
                 $.ajax({
-                    url: "/api/EverydaysMeal?date=@DateTime.Today&&id=" + member.memberList[i].Id,
+                    url: "/api/EverydaysMeal?date=" + TodaysDate + "&&id=" + member.memberList[i].Id,
                     async: false, 
                     method: "GET", 
                     success: function (data) {

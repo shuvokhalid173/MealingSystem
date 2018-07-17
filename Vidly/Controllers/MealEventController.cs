@@ -22,8 +22,22 @@ namespace Vidly.Controllers
 
         }
 
+
+        public ActionResult getMail ()
+        {
+            return Content(AccountController.CurrentUserEmail);
+        }
         public ActionResult Index ()
         {
+            return View();
+        }
+
+        public ActionResult MealBazar ()
+        {
+            if (counter == 0)
+            {
+                return RedirectToAction("EventForm");
+            }
             return View();
         }
 
